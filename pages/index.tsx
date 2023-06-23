@@ -1,3 +1,5 @@
+//generate comments for each function in the code below
+
 import { useRef, useState, useEffect } from 'react';
 import Layout from '@/components/layout';
 import styles from '@/styles/Home.module.css';
@@ -25,7 +27,7 @@ export default function Home() {
   }>({
     messages: [
       {
-        message: 'Hi, what would you like to learn about this document?',
+        message: 'Hi, I am your immigration paralegal. Let me know how I can help!',
         type: 'apiMessage',
       },
     ],

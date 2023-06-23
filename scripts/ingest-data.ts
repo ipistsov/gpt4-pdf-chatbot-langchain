@@ -18,6 +18,7 @@ export const run = async () => {
       '.pdf': (path) => new PDFLoader(path),
     });
 
+    
     // const loader = new PDFLoader(filePath);
     const rawDocs = await directoryLoader.load();
 
