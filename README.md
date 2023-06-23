@@ -62,13 +62,19 @@ PINECONE_INDEX_NAME=
 
 1. Inside `docs` folder, add your pdf files or folders that contain pdf files.
 
-2. Run the script `npm run ingest` to 'ingest' and embed your docs. If you run into errors troubleshoot below.
+2. Run the script 
+- `npm run ingest`  to 'ingest' and embed your PDF docs (make sure all PDFs are in the DOCS folder)
+- `npm run ingest-web`  to 'ingest' and embed your WEB docs (make sure to specify the html address at ingest-web.ts)
+ If you run into errors troubleshoot below.
 
 3. Check Pinecone dashboard to verify your namespace and vectors have been added.
 
 ## Run the app
 
-Once you've verified that the embeddings and content have been successfully added to your Pinecone, you can run the app `npm run dev` to launch the local dev environment, and then type a question in the chat interface.
+Once you've verified that the embeddings and content have been successfully added to your Pinecone, 
+you can run the app 
+`npm run dev` 
+to launch the local dev environment, and then type a question in the chat interface.
 
 ## Troubleshooting
 

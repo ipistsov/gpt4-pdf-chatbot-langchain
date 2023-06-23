@@ -1,28 +1,24 @@
+/*     Web Data Loader - https://js.langchain.com/docs/modules/indexes/document_loaders/examples/web_loaders/web_cheerio
+Install cheerio with CMD in the folder:       yarn add cheerio    */
+
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { pinecone } from '@/utils/pinecone-client';
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
-import { DirectoryLoader } from 'langchain/document_loaders/fs/directory';
+import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 
-/* Name of directory to retrieve your files from 
-   Make sure to add your PDF files inside the 'docs' folder
-*/
-const filePath = 'docs';
+
+const loader = new CheerioWebBaseLoader(
+  "https://www.uscis.gov/book/export/html/68600"
+);
+
+const rawDocs = await loader.load();
 
 export const run = async () => {
   try {
-    /*load raw docs from the all files in the directory */
-    const directoryLoader = new DirectoryLoader(filePath, {
-      '.pdf': (path) => new PDFLoader(path),
-    });
-
-    
-    // const loader = new PDFLoader(filePath);
-    const rawDocs = await directoryLoader.load();
-
-    /* Split text into chunks */
+    /* Split text into chunks - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 4000,    // max number of tokens per chunk
       chunkOverlap: 200,
@@ -36,7 +32,7 @@ export const run = async () => {
     const embeddings = new OpenAIEmbeddings();
     const index = pinecone.Index(PINECONE_INDEX_NAME); //change to your own index name
 
-    //embed the PDF documents
+    //embed the documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
       namespace: PINECONE_NAME_SPACE,
