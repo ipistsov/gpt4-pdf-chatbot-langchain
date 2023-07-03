@@ -103,3 +103,45 @@ In general, keep an eye out in the `issues` and `discussions` section of this re
 ## Credit
 
 Frontend of this repo is inspired by [langchain-chat-nextjs](https://github.com/zahidkhawaja/langchain-chat-nextjs)
+
+
+## How to deploy on GCP (suggested by Bing on 6/29/2023). I got stuck on #5. Have not tuned GCP VM either - no OS, nothing
+
+
+Sure! Here are the steps to set up a GitHub Action to deploy your project to a GCP VM:
+
+1. **Create a service account** in your GCP project with the necessary permissions to deploy to a VM. You can do this by going to the [IAM & Admin](https://console.cloud.google.com/iam-admin/serviceaccounts) page in the Google Cloud Console, selecting your project, and clicking on the "Create Service Account" button. Follow the prompts to create the service account and grant it the necessary permissions.
+
+2. **Download a JSON key** for the service account you just created. You can do this by going to the [Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts) page in the Google Cloud Console, selecting the service account you just created, clicking on the "Actions" button (represented by three vertical dots), and selecting "Create key". Select "JSON" as the key type and click on "Create" to download the key.
+
+3. **Add the JSON key as a secret** in your GitHub repository. You can do this by going to the "Settings" tab of your repository, clicking on "Secrets" in the left sidebar, and clicking on the "New repository secret" button. Give the secret a name (e.g., `GCP_SA_KEY`) and paste the contents of the JSON key you downloaded earlier into the "Value" field.
+
+4. **Create a GitHub Actions workflow** file in your repository (e.g., `.github/workflows/deploy.yml`) with the following content:
+```yaml
+name: Deploy to GCP VM
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up gcloud
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: 114682467558164399475
+    - name: Deploy to GCP VM
+      run: |
+        # Add your deployment commands here (I GOT STUCK HERE)
+```
+Make sure to replace `<YOUR_PROJECT_ID>` with your GCP project ID.
+
+5. **Add your deployment commands** to the `run` section of the "Deploy to GCP VM" step in your workflow file. These commands will depend on how you have set up your project and how you want to deploy it to your GCP VM.
+
+That's it! Now, every time you push changes to the `main` branch of your repository, this GitHub Action will run and deploy your project to your GCP VM.
+
+I hope this helps! Let me know if you have any questions or if there's anything else I can help with.
