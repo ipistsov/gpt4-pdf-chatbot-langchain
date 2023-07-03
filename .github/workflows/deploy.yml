@@ -1,0 +1,26 @@
+name: Deploy to GCP VM
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up gcloud
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: 114682467558164399475
+    - name: Deploy to GCP VM
+      run: |
+        // Add your deployment commands here
+        // gcloud compute scp --recurse my-app/* my-vm:~/my-app/  (using the gcloud compute scp command to copy the my-app directory from our repository to the my-vm VM instance.)
+        // gcloud compute ssh my-vm --command "cd ~/my-app && npm install"  (Then, we’re using the gcloud compute ssh command to run two commands on the VM: to install any dependencies using npm install)
+        // gcloud compute ssh my-vm --command "sudo systemctl restart my-web-server" (and another to restart the web server using systemctl)
+        
+        gcloud compute scp --recurse my-app/* my-vm:~/my-app/
+        gcloud compute ssh my-vm --command "cd ~/my-app && npm install"
+        gcloud compute ssh my-vm --command "sudo systemctl restart github-playground"
