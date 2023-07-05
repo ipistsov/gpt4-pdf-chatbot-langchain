@@ -27,7 +27,7 @@ export default function Home() {
   }>({
     messages: [
       {
-        message: 'Hi, I am your immigration paralegal. Let me know how I can help!',
+        message: 'Hi, my name is Exsy, I am your immigration paralegal. Let me know how I can help!',
         type: 'apiMessage',
       },
     ],
