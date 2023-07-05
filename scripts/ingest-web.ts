@@ -20,7 +20,7 @@ export const run = async () => {
   try {
     /* Split text into chunks - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 4000,    // max number of tokens per chunk
+      chunkSize: 3000,    // max number of tokens per chunk
       chunkOverlap: 200,
     });
 
