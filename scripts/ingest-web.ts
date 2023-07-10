@@ -5,11 +5,14 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { pinecone } from '@/utils/pinecone-client';
-import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 
-
+/* Sources:
+   USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"
+   
+   */
+  
 const loader = new CheerioWebBaseLoader(
   "https://www.uscis.gov/book/export/html/68600"
 );
@@ -20,7 +23,7 @@ export const run = async () => {
   try {
     /* Split text into chunks - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 3000,    // max number of tokens per chunk
+      chunkSize: 4000,    // max number of tokens per chunk
       chunkOverlap: 200,
     });
 
