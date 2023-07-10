@@ -1,0 +1,4 @@
+npm run ingest       -  to 'ingest' and embed your PDF docs (make sure all PDFs are in the DOCS folder)
+npm run ingest-web   -  to 'ingest' and embed your WEB docs (make sure to specify the html address at ingest-web.ts)
+
+npm run dev          - to Run the App

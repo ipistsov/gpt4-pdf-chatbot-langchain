@@ -9,33 +9,34 @@ import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 
 /* Sources:
-   USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"
-   
-   */
+   USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"  
+   INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml;jsessionid=5B1AC77B70A711A0E8C6FC38A3149193?req=granuleid%3AUSC-prelim-title8&saved=%7CZ3JhbnVsZWlkOlVTQy1wcmVsaW0tdGl0bGU4LXNlY3Rpb24xMTAx%7C%7C%7C0%7Cfalse%7Cprelim&edition=prelim"
+          */
   
 const loader = new CheerioWebBaseLoader(
-  "https://www.uscis.gov/book/export/html/68600"
+  "https://uscode.house.gov/view.xhtml;jsessionid=5B1AC77B70A711A0E8C6FC38A3149193?req=granuleid%3AUSC-prelim-title8&saved=%7CZ3JhbnVsZWlkOlVTQy1wcmVsaW0tdGl0bGU4LXNlY3Rpb24xMTAx%7C%7C%7C0%7Cfalse%7Cprelim&edition=prelim"
 );
 
 const rawDocs = await loader.load();
 
+
+ /* Split text into chunks. Set ChunkSize & Overlap - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
+
 export const run = async () => {
   try {
-    /* Split text into chunks - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
     const textSplitter = new RecursiveCharacterTextSplitter({
-      chunkSize: 4000,    // max number of tokens per chunk
+      chunkSize: 4000,
       chunkOverlap: 200,
     });
 
     const docs = await textSplitter.splitDocuments(rawDocs);
     console.log('split docs', docs);
 
+    /*create and store the embeddings in the vectorStore - Update index name and more at .env*/
     console.log('creating vector store...');
-    /*create and store the embeddings in the vectorStore*/
     const embeddings = new OpenAIEmbeddings();
-    const index = pinecone.Index(PINECONE_INDEX_NAME); //change to your own index name
+    const index = pinecone.Index(PINECONE_INDEX_NAME);
 
-    //embed the documents
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
       namespace: PINECONE_NAME_SPACE,
