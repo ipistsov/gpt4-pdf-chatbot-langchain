@@ -26,7 +26,7 @@ export default async function handler(
 			}
 		});
 	} catch (error: any) {
-		console.log('error', error);
+		console.error('Error from init API', error);
 		res.status(500).json({
 			success: false,
 			error: error.message || 'Something went wrong'

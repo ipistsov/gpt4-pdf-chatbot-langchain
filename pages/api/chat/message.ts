@@ -120,7 +120,7 @@ export default async function handler(
 			sourceData: [],
 		});
 	} catch (error: any) {
-		console.error(error);
+		console.error('Error from message API', error);
 		res.status(500).json({
 			success: false,
 			error: error.message || 'Something went wrong'
