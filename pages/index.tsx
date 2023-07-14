@@ -71,7 +71,7 @@ export default function Home() {
     setQuery('');
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/api/chat/message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,11 +93,11 @@ export default function Home() {
             ...state.messages,
             {
               type: 'apiMessage',
-              message: data.text,
-              sourceDocs: data.sourceDocuments,
+              message: data.data,
+              sourceDocs: data.sourceData,
             },
           ],
-          history: [...state.history, [question, data.text]],
+          history: [...state.history, [question, data.data]],
         }));
       }
       console.log('messageState', messageState);
