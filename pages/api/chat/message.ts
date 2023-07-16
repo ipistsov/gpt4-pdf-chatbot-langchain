@@ -15,8 +15,9 @@ export default async function handler(
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
 
-	// extract hash and question from the request body
-	const [hash, question] = req.body;
+	// extract hash and text from the request body
+	// rename text to question
+	const { hash, text: question } = req.body;
 
 	if (!question || !hash) {
 		return res.status(400).json({ message: 'No question or hash in the request' });
@@ -36,22 +37,18 @@ export default async function handler(
 		if (history[0]?.question === sanitizedQuestion) {
 			if (history[0]?.pending) {
 				return res.status(200).json({
-					result: {
-						success: true,
-						data: "",
-						keywords: "",
-						sourceData: [],
-					}
+					success: true,
+					data: "",
+					keywords: null,
+					sourceData: [],
 				});
 			} else {
 				// if the response is not pending, return the answer
 				return res.status(200).json({
-					result: {
-						success: true,
-						data: history[0].answer ?? "",
-						keywords: "",
-						sourceData: history[0].source_data ?? [],
-					}
+					success: true,
+					data: history[0].answer ?? "",
+					keywords: "placeholder",
+					sourceData: history[0].source_data ?? []
 				});
 			}
 		}
@@ -118,12 +115,10 @@ export default async function handler(
 
 		// return empty response after OpenAI API has been triggered
 		return res.status(200).json({
-			result: {
-				success: true,
-				data: "",
-				keywords: "",
-				sourceData: [],
-			}
+			success: true,
+			data: "",
+			keywords: null,
+			sourceData: [],
 		});
 	} catch (error: any) {
 		console.error('Error from message API', error);
