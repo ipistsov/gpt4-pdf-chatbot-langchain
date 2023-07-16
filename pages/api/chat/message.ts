@@ -36,18 +36,22 @@ export default async function handler(
 		if (history[0]?.question === sanitizedQuestion) {
 			if (history[0]?.pending) {
 				return res.status(200).json({
-					success: true,
-					data: "",
-					keywords: "",
-					sourceData: [],
+					result: {
+						success: true,
+						data: "",
+						keywords: "",
+						sourceData: [],
+					}
 				});
 			} else {
 				// if the response is not pending, return the answer
 				return res.status(200).json({
-					success: true,
-					data: history[0].answer ?? "",
-					keywords: "",
-					sourceData: history[0].source_data ?? [],
+					result: {
+						success: true,
+						data: history[0].answer ?? "",
+						keywords: "",
+						sourceData: history[0].source_data ?? [],
+					}
 				});
 			}
 		}
@@ -114,10 +118,12 @@ export default async function handler(
 
 		// return empty response after OpenAI API has been triggered
 		return res.status(200).json({
-			success: true,
-			data: "",
-			keywords: "",
-			sourceData: [],
+			result: {
+				success: true,
+				data: "",
+				keywords: "",
+				sourceData: [],
+			}
 		});
 	} catch (error: any) {
 		console.error('Error from message API', error);
