@@ -59,7 +59,7 @@ export default function Home() {
     textAreaRef.current?.focus();
   }, []);
 
-  const sendMessage = async (question: string) => {
+  const sendMessage: any = async (question: string) => {
     const response = await fetch('/api/chat/message', {
       method: 'POST',
       headers: {
