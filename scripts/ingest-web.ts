@@ -10,12 +10,12 @@ import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 
 /* Sources:
    USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"  
-   INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml;jsessionid=5B1AC77B70A711A0E8C6FC38A3149193?req=granuleid%3AUSC-prelim-title8&saved=%7CZ3JhbnVsZWlkOlVTQy1wcmVsaW0tdGl0bGU4LXNlY3Rpb24xMTAx%7C%7C%7C0%7Cfalse%7Cprelim&edition=prelim"
+   INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
    Exsy - contact us to discuss collaboration - "https://www.exsy.io/post/attract-prequalify-customers-with-an-ai-agent"
           */
   
 const loader = new CheerioWebBaseLoader(
-  "https://www.exsy.io/post/attract-prequalify-customers-with-an-ai-agent"
+  "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
 );
 
 const rawDocs = await loader.load();
@@ -44,7 +44,7 @@ export const run = async () => {
       textKey: 'text',
     });
   } catch (error) {
-    console.log('error', error);
+    console.log('error', error.response.data.error);
     throw new Error('Failed to ingest your data');
   }
 };
