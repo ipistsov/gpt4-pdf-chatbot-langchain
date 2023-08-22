@@ -41,6 +41,7 @@ export default async function handler(
 					data: "",
 					keywords: null,
 					sourceData: [],
+					followupQuestions: []
 				});
 			} else {
 				// if the response is not pending, return the answer
@@ -48,7 +49,8 @@ export default async function handler(
 					success: true,
 					data: history[0].answer ?? "",
 					keywords: "placeholder",
-					sourceData: history[0].source_data ?? []
+					sourceData: history[0].source_data ?? [],
+					followupQuestions: JSON.parse(history[0].followup_questions)
 				});
 			}
 		}
@@ -60,8 +62,8 @@ export default async function handler(
 
 		// insert the question in database
 		const insertedRecord = await excuteQuery({
-			query: 'INSERT INTO history(hash, question) VALUES(?, ?);',
-			values: [hash, sanitizedQuestion]
+			query: 'INSERT INTO history(hash, question, followup_questions) VALUES(?, ?, ?);',
+			values: [hash, sanitizedQuestion, "[]"]
 		}) as any;
 
 
@@ -102,13 +104,23 @@ export default async function handler(
 				}
 			})
 			.then(async sanitizedResponse => {
+				let followupQuestions: string[] = []
+				// extract the followup questions from the answer
+				const splittedText: string = sanitizedResponse.text.split("!QUESTIONS!: \n")
+
+				if (splittedText[1]) {
+					// if there are followup questions, create an array of them
+					followupQuestions = splittedText[1].split('\n')
+				}
 				// save the response in database
 				await excuteQuery({
-					query: 'UPDATE history SET pending = 0, answer = ?, source_data = ? WHERE id = ?;',
+					query: 'UPDATE history SET pending = 0, answer = ?, source_data = ?, followup_questions = ? WHERE id = ?;',
 					values: [
-						sanitizedResponse.text,
+						splittedText[0],
 						JSON.stringify(sanitizedResponse.sourceData),
-						insertedRecord.insertId]
+						JSON.stringify(followupQuestions),
+						insertedRecord.insertId
+					]
 				})
 			})
 			.catch(console.error);
@@ -119,6 +131,7 @@ export default async function handler(
 			data: "",
 			keywords: null,
 			sourceData: [],
+			followupQuestions: []
 		});
 	} catch (error: any) {
 		console.error('Error from message API', error);
