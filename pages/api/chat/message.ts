@@ -116,7 +116,7 @@ export default async function handler(
 			.then(async sanitizedResponse => {
 				let followupQuestions: string[] = []
 				// extract the followup questions from the answer
-				const splittedText: string = sanitizedResponse.text.split("!QUESTIONS!: \n")
+				const splittedText: string = sanitizedResponse.text.split(/!QUESTIONS!: \n|!QUESTIONS!: /)
 
 				if (splittedText[1]) {
 					// if there are followup questions, create an array of them
