@@ -21,7 +21,7 @@ const generatePrompts = (client: string) => {
 			If the question does not have a clear answer, suggest trying to rephrase the question or to discuss the matter with an immigration lawyer. 
 			DO NOT try to make up an answer.
 			If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the immigration law.
-			Also, in case the primary question is related to immigration, please suggest two best follow-up questions - have them listed at the end of the response in the format: "!QUESTIONS!: [Question 1, Question 2]"
+			Also, in case the primary question is related to immigration, please suggest two best follow-up questions - have them listed at the end of the response in the format: "!QUESTIONS!: \nQuestion 1 \nQuestion 2"
 			
 			{context}
 			
@@ -42,7 +42,7 @@ const generatePrompts = (client: string) => {
 			If the question does not have a clear answer, suggest trying to rephrase the question or to discuss the matter with an immigration lawyer. 
 			DO NOT try to make up an answer.
 			If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the immigration law.
-			Also, in case the primary question is related to immigration, please suggest two best follow-up questions - have them listed at the end of the response in the format: "!QUESTIONS!: [Question 1, Question 2]"
+			Also, in case the primary question is related to immigration, please suggest two best follow-up questions - have them listed at the end of the response in the format: "!QUESTIONS!: \nQuestion 1 \nQuestion 2"
 			
 			{context}
 			
