@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import * as crypto from 'crypto';
+import { allowedClients } from '@/utils/allowedClients';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -9,6 +10,16 @@ export default async function handler(
 	if (req.method !== 'GET') {
 		res.status(405).json({ error: 'Method not allowed' });
 		return;
+	}
+
+	let { client }: { client?: string } = req.query;
+
+	if (!client) {
+		// if client is not sent in request, use exsy as default
+		client = allowedClients.exsy
+	} else if (!Object.keys(allowedClients).includes(client)) {
+		// if client is not valid, return error
+		return res.status(400).json({ message: 'Invalid client' });
 	}
 
 	try {
@@ -22,7 +33,7 @@ export default async function handler(
 			success: true,
 			data: {
 				hash: randomStringHash,
-				initMessage: 'Hello! I am your AI assistant. Let me know how I can help!',
+				initMessage: generateInitMessage(client),
 			}
 		});
 	} catch (error: any) {
@@ -44,4 +55,21 @@ function generateRandomString(length: number): string {
 	}
 
 	return randomString;
+}
+
+function generateInitMessage(client: string) {
+	let initMessage: string = '';
+
+	switch (client) {
+		case allowedClients.exsy:
+			initMessage = 'Hello! I am your AI assistant. Let me know how I can help!'
+			return initMessage;
+
+		case allowedClients.lubausa:
+			initMessage = 'Hello! I am your AI assistant. Let me know how I can help!'
+			return initMessage;
+
+		default:
+			return initMessage;
+	}
 }
