@@ -9,6 +9,6 @@ if (!process.env.PINECONE_INDEX_NAME) {
 
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME ?? '';
 
-const PINECONE_NAME_SPACE = 'gpt4-langchain'; // ADD HERE (https://gpt4-langchain-8cb711f.svc.us-central1-gcp.pinecone.io)
+const PINECONE_NAME_SPACE = 'AFFIRMATIVE-ASYLUM-PROCEDURES-MANUAL-attempt-2'; // ADD HERE (https://gpt4-langchain-8cb711f.svc.us-central1-gcp.pinecone.io)
 
 export { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE };

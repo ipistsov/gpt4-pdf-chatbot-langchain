@@ -12,10 +12,11 @@ import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
    USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"  
    INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
    Exsy - contact us to discuss collaboration - "https://www.exsy.io/post/attract-prequalify-customers-with-an-ai-agent"
+   2023-09-05 AFFIRMATIVE ASYLUM PROCEDURES MANUAL - "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf"
           */
   
 const loader = new CheerioWebBaseLoader(
-  "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
+  "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf"
 );
 
 const rawDocs = await loader.load();
@@ -40,6 +41,7 @@ export const run = async () => {
 
     await PineconeStore.fromDocuments(docs, embeddings, {
       pineconeIndex: index,
+      /*  */
       namespace: PINECONE_NAME_SPACE,
       textKey: 'text',
     });
