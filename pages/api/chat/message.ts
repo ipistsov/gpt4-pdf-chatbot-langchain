@@ -5,6 +5,7 @@ import { makeChain } from '@/utils/makechain';
 import { pinecone } from '@/utils/pinecone-client';
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import excuteQuery from '@/config/db';
+import { allowedClients } from '@/utils/allowedClients';
 
 export default async function handler(
 	req: NextApiRequest,
@@ -15,12 +16,21 @@ export default async function handler(
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
 
-	// extract hash and text from the request body
+	// extract hash, text and client from the request body
 	// rename text to question
 	const { hash, text: question } = req.body;
+	let { client } = req.body;
 
 	if (!question || !hash) {
 		return res.status(400).json({ message: 'No question or hash in the request' });
+	}
+
+	if (!client) {
+		// if client is not sent in request, use exsy as default
+		client = allowedClients.exsy
+	} else if (!Object.keys(allowedClients).includes(client)) {
+		// if client is not valid, return error
+		return res.status(400).json({ message: 'Invalid client in body' });
 	}
 
 	// OpenAI recommends replacing newlines with spaces for best results
@@ -41,6 +51,7 @@ export default async function handler(
 					data: "",
 					keywords: null,
 					sourceData: [],
+					followupQuestions: []
 				});
 			} else {
 				// if the response is not pending, return the answer
@@ -48,7 +59,8 @@ export default async function handler(
 					success: true,
 					data: history[0].answer ?? "",
 					keywords: "placeholder",
-					sourceData: history[0].source_data ?? []
+					sourceData: history[0].source_data ?? [],
+					followupQuestions: JSON.parse(history[0].followup_questions)
 				});
 			}
 		}
@@ -60,8 +72,8 @@ export default async function handler(
 
 		// insert the question in database
 		const insertedRecord = await excuteQuery({
-			query: 'INSERT INTO history(hash, question) VALUES(?, ?);',
-			values: [hash, sanitizedQuestion]
+			query: 'INSERT INTO history(hash, question, followup_questions, client) VALUES(?, ?, ?, ?);',
+			values: [hash, sanitizedQuestion, "[]", client]
 		}) as any;
 
 
@@ -76,7 +88,7 @@ export default async function handler(
 		)
 			.then(async vectorStore => {
 				//create chain
-				const chain = makeChain(vectorStore);
+				const chain = makeChain(vectorStore, client);
 				//Ask a question using chat history
 				return await chain.call({
 					question: sanitizedQuestion,
@@ -102,13 +114,23 @@ export default async function handler(
 				}
 			})
 			.then(async sanitizedResponse => {
+				let followupQuestions: string[] = []
+				// extract the followup questions from the answer
+				const splittedText: string = sanitizedResponse.text.split(/!QUESTIONS!: \n|!QUESTIONS!:\n|!QUESTIONS!: /)
+
+				if (splittedText[1]) {
+					// if there are followup questions, create an array of them
+					followupQuestions = splittedText[1].split('\n')
+				}
 				// save the response in database
 				await excuteQuery({
-					query: 'UPDATE history SET pending = 0, answer = ?, source_data = ? WHERE id = ?;',
+					query: 'UPDATE history SET pending = 0, answer = ?, source_data = ?, followup_questions = ? WHERE id = ?;',
 					values: [
-						sanitizedResponse.text,
+						splittedText[0],
 						JSON.stringify(sanitizedResponse.sourceData),
-						insertedRecord.insertId]
+						JSON.stringify(followupQuestions),
+						insertedRecord.insertId
+					]
 				})
 			})
 			.catch(console.error);
@@ -119,6 +141,7 @@ export default async function handler(
 			data: "",
 			keywords: null,
 			sourceData: [],
+			followupQuestions: []
 		});
 	} catch (error: any) {
 		console.error('Error from message API', error);
