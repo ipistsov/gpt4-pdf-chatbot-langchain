@@ -13,7 +13,8 @@
     "lint": "eslint --ignore-path .gitignore \"**/*.+(ts|js|tsx)\"",
     "format": "prettier --ignore-path .gitignore \"**/*.+(ts|js|tsx)\" --write",
     "ingest": "tsx -r dotenv/config scripts/ingest-data.ts",
-    "ingest-web": "tsx -r dotenv/config scripts/ingest-web.ts"
+    "ingest-web": "tsx -r dotenv/config scripts/ingest-web.ts",
+    "update-sources": "tsx -r dotenv/config utils/updatePineconeSource.ts"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
