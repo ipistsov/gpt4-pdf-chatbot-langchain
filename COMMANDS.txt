@@ -17,3 +17,10 @@ PINECONE_API_KEY="85c846c2-785c-470a-82db-521aa197c7b1" before the command
 -- run one of this command after specifying the source location (weblink for ingest-web OR place pdf file into D:\Coding\playground\tesla10k\gpt4-pdf-chatbot-langchain\docs)
 npm run ingest       -  to 'ingest' and embed your PDF docs (make sure all PDFs are in the DOCS folder)
 npm run ingest-web   -  to 'ingest' and embed your WEB docs (make sure to specify the html address at ingest-web.ts)
+
+- Add a PDF Source
+-- Download pdf, save it in the project's Docs folder 
+-- Index this pdf file   -   npm run ingest
+-- To Update the path/Metadata in the Pinceone Index from local to actual url
+--- Update the information in updatePineconeSource.ts
+--- Run updatePineconeSource.ts     npm run updatePineconeSources

@@ -3,8 +3,10 @@ import { pinecone } from '@/utils/pinecone-client';
 const index = pinecone.Index(process.env.PINECONE_INDEX_NAME ?? '');
 
 const PINECONE_NAME_SPACE = 'gpt4-langchain';
-const originalSource = "W:\\personal\\web\\gpt4-pdf-chatbot-langchain\\docs\\AAPM-2016 (AFFIRMATIVE ASYLUM PROCEDURES MANUAL).pdf";
-const sourceToReplaceWith = "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf";
+// State the Current Source here (TO BE REPLACE) - change "\"   with "\\"
+const originalSource = "D:\\Coding\\playground\\tesla10k\\gpt4-pdf-chatbot-langchain\\docs\\i-9instr.pdf";
+// Print the Actual url link You want to be displayed here:
+const sourceToReplaceWith = "https://www.uscis.gov/sites/default/files/document/forms/i-9instr.pdf";
 
 // Fetch vectors that match the specified filter
 const fetchResult = await index.query({
