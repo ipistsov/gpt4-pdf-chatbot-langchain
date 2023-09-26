@@ -13,10 +13,11 @@ import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
    INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
    Exsy - contact us to discuss collaboration - "https://www.exsy.io/post/attract-prequalify-customers-with-an-ai-agent"
    2023-09-05 AFFIRMATIVE ASYLUM PROCEDURES MANUAL - "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf"
+   2023-09-20 uscis-family-of-us-citizens - "https://www.uscis.gov/family/family-of-us-citizens"
           */
   
 const loader = new CheerioWebBaseLoader(
-  "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf"
+  "https://www.uscis.gov/family/family-of-us-citizens"
 );
 
 const rawDocs = await loader.load();

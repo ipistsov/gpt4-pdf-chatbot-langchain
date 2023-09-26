@@ -5,15 +5,24 @@ npm run dev          - to Run the App
 Change the prompt - at QA_PROMPT
 
 3. To fix the issue with "wrong" OpenAI API_KEY
-run the Bash terminal with 
-PINECONE_API_KEY="85c846c2-785c-470a-82db-521aa197c7b1" before the command
+run the Bash terminal and set up the key before the command:
+OPENAI_API_KEY="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"
 
 4. Github branches
 -- git branch        - check the current branch 
 -- git checkout main - go to the main branch
 
 5. Add new sources into Pinecone
--- Before creating new embeddings, set a corresponding 'PINECONE_NAME_SPACE' in pinecone.ts (no spaces allowed)
--- run one of this command after specifying the source location (weblink for ingest-web OR place pdf file into D:\Coding\playground\tesla10k\gpt4-pdf-chatbot-langchain\docs)
-npm run ingest       -  to 'ingest' and embed your PDF docs (make sure all PDFs are in the DOCS folder)
+- Before creating new embeddings, set a corresponding 'PINECONE_NAME_SPACE' in Config >> pinecone.ts (no spaces allowed)
+- run one of this command after specifying the source location (weblink for ingest-web OR place pdf file into D:\Coding\playground\tesla10k\gpt4-pdf-chatbot-langchain\docs)
+
+- Add a URL source:
 npm run ingest-web   -  to 'ingest' and embed your WEB docs (make sure to specify the html address at ingest-web.ts)
+
+- Add a PDF Source
+-- Download pdf, save it in the project's Docs folder 
+-- Index this pdf file   -   npm run ingest
+
+-- To Update the path/Metadata in the Pinceone Index from local to actual url
+--- Update the information in updatePineconeSource.ts
+--- Run updatePineconeSource.ts     npm run updatePineconeSources
