@@ -72,15 +72,8 @@ export default function Home() {
     });
 
     const data = await response.json();
-
-    // recursively call the api if the response is pending
-    if (!data.error && !data.data) {
-      // wait 300 milliseconds before requesting again
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return await sendMessage(question);
-    } else {
-      return data;
-    }
+		
+		return data;
   };
 
   //handle form submission
