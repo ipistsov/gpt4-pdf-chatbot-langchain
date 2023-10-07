@@ -46,6 +46,9 @@ export default async function handler(
 			message: any;
 			source: any;
 		}[];
+	} = {
+		text: '',
+		sourceData: [],
 	};
 
 	let followupQuestions: string[] = [];
@@ -86,8 +89,8 @@ export default async function handler(
 				success: true,
 				data: token,
 				keywords: "placeholder",
-				sourceData: [],
-				followupQuestions: []
+				// sourceData: [],
+				// followupQuestions: []
 			}));
 		});
 
