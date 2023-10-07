@@ -36,6 +36,19 @@ export default async function handler(
 	// OpenAI recommends replacing newlines with spaces for best results
 	const sanitizedQuestion = question.trim().replaceAll('\n', ' ');
 
+	const sendData = (data: string) => {
+		res.write(`data: ${data}\n\n`);
+	};
+
+	let sanitizedResponse: {
+		text: any;
+		sourceData: {
+			message: any;
+			source: any;
+		}[];
+	};
+
+	let followupQuestions: string[] = [];
 	try {
 		// get the last 10 questions of the user with this hash
 		let history = await excuteQuery({
@@ -58,8 +71,25 @@ export default async function handler(
 			},
 		)
 
+		res.writeHead(200, {
+			"Content-Type": "text/event-stream",
+			// Important to set no-transform to avoid compression, which will delay
+			// writing response chunks to the client.
+			// See https://github.com/vercel/next.js/issues/9965
+			"Cache-Control": "no-cache, no-transform",
+			Connection: "keep-alive",
+		});
+
 		//create chain
-		const chain = makeChain(vectorStore, client);
+		const chain = makeChain(vectorStore, client, (token: string) => {
+			sendData(JSON.stringify({
+				success: true,
+				data: token,
+				keywords: "placeholder",
+				sourceData: [],
+				followupQuestions: []
+			}));
+		});
 
 		//Ask a question using chat history
 		const response = await chain.call({
@@ -80,12 +110,12 @@ export default async function handler(
 			})
 		}
 
-		const sanitizedResponse = {
+		sanitizedResponse = {
 			text: response.text,
 			sourceData
 		};
 
-		let followupQuestions: string[] = []
+		followupQuestions = []
 		// extract the followup questions from the answer
 		const splittedText: string = sanitizedResponse.text.split(/!QUESTIONS!: \n|!QUESTIONS!:\n|!QUESTIONS!: /)
 
@@ -108,19 +138,17 @@ export default async function handler(
 				client
 			]
 		}).catch(console.error);
-
-		return res.status(200).json({
-			success: true,
-			data: answer ?? "",
-			keywords: "placeholder",
-			sourceData: sanitizedResponse.sourceData ?? [],
-			followupQuestions: followupQuestions
-		});
-	} catch (error: any) {
+	} catch (error) {
 		console.error('Error from message API', error);
-		res.status(500).json({
-			success: false,
-			error: error.message || 'Something went wrong'
-		});
+	} finally {
+		sendData(
+			JSON.stringify({
+				success: true,
+				data: "[DONE]",
+				keywords: "placeholder",
+				sourceData: sanitizedResponse.sourceData ?? [],
+				followupQuestions: followupQuestions
+			}));
+		res.end();
 	}
 }

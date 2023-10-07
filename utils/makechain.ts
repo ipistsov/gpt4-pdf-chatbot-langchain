@@ -2,6 +2,7 @@ import { OpenAI } from 'langchain/llms/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { ConversationalRetrievalQAChain } from 'langchain/chains';
 import { allowedClients } from '@/utils/allowedClients';
+import { CallbackManager } from 'langchain/callbacks';
 
 const generatePrompts = (client: string) => {
 	let CONDENSE_PROMPT: string = '';
@@ -55,12 +56,16 @@ const generatePrompts = (client: string) => {
 	}
 }
 
-export const makeChain = (vectorstore: PineconeStore, client: string) => {
+export const makeChain = (vectorstore: PineconeStore, client: string, onTokenStream?: (token: string) => void) => {
 	const { CONDENSE_PROMPT, QA_PROMPT } = generatePrompts(client);
 	const model = new OpenAI({
 		temperature: 0, // increase temepreature to get more creative answers
 		// modelName: 'gpt-3.5-turbo-16k-0613', //change this to gpt-4 if you have access
 		modelName: 'gpt-3.5-turbo',
+		streaming: Boolean(onTokenStream),
+		callbacks: CallbackManager.fromHandlers({
+			handleLLMNewToken: onTokenStream,
+		})
 	});
 
 	const chain = ConversationalRetrievalQAChain.fromLLM(
