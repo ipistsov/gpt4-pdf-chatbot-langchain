@@ -46,7 +46,7 @@ export const run = async () => {
       namespace: PINECONE_NAME_SPACE,
       textKey: 'text',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.log('error', error.response.data.error);
     throw new Error('Failed to ingest your data');
   }

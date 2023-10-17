@@ -43,42 +43,13 @@ export default async function handler(
 			values: [hash]
 		}) as any[];
 
-		// if the question is same and response is still pending return empty response
-		if (history[0]?.question === sanitizedQuestion) {
-			if (history[0]?.pending) {
-				return res.status(200).json({
-					success: true,
-					data: "",
-					keywords: null,
-					sourceData: [],
-					followupQuestions: []
-				});
-			} else {
-				// if the response is not pending, return the answer
-				return res.status(200).json({
-					success: true,
-					data: history[0].answer ?? "",
-					keywords: "placeholder",
-					sourceData: history[0].source_data ?? [],
-					followupQuestions: JSON.parse(history[0].followup_questions)
-				});
-			}
-		}
-
 		// get the question history of current user for context
 		history = history.reverse().map(record => {
 			return [record.question, record.answer]
 		})
 
-		// insert the question in database
-		const insertedRecord = await excuteQuery({
-			query: 'INSERT INTO history(hash, question, followup_questions, client) VALUES(?, ?, ?, ?);',
-			values: [hash, sanitizedQuestion, "[]", client]
-		}) as any;
-
-
 		/* create vectorstore*/
-		PineconeStore.fromExistingIndex(
+		const vectorStore = await PineconeStore.fromExistingIndex(
 			new OpenAIEmbeddings({}),
 			{
 				pineconeIndex: pinecone.Index(PINECONE_INDEX_NAME),
@@ -86,62 +57,64 @@ export default async function handler(
 				namespace: PINECONE_NAME_SPACE, //namespace comes from your config folder
 			},
 		)
-			.then(async vectorStore => {
-				//create chain
-				const chain = makeChain(vectorStore, client);
-				//Ask a question using chat history
-				return await chain.call({
-					question: sanitizedQuestion,
-					chat_history: history || [],
-				});
-			})
-			.then(response => {
-				// sanitize the response according to our structure
-				const sourceData = []
-				for (let index = 0; index < response.sourceDocuments.length; index++) {
-					if (index >= 3) {
-						// get first three sources only
-						break;
-					}
-					sourceData.push({
-						message: response.sourceDocuments[index].pageContent,
-						source: response.sourceDocuments[index].metadata.source
-					})
-				}
-				return {
-					text: response.text,
-					sourceData
-				}
-			})
-			.then(async sanitizedResponse => {
-				let followupQuestions: string[] = []
-				// extract the followup questions from the answer
-				const splittedText: string = sanitizedResponse.text.split(/!QUESTIONS!: \n|!QUESTIONS!:\n|!QUESTIONS!: /)
 
-				if (splittedText[1]) {
-					// if there are followup questions, create an array of them
-					followupQuestions = splittedText[1].split('\n')
-				}
-				// save the response in database
-				await excuteQuery({
-					query: 'UPDATE history SET pending = 0, answer = ?, source_data = ?, followup_questions = ? WHERE id = ?;',
-					values: [
-						splittedText[0],
-						JSON.stringify(sanitizedResponse.sourceData),
-						JSON.stringify(followupQuestions),
-						insertedRecord.insertId
-					]
-				})
-			})
-			.catch(console.error);
+		//create chain
+		const chain = makeChain(vectorStore, client);
 
-		// return empty response after OpenAI API has been triggered
+		//Ask a question using chat history
+		const response = await chain.call({
+			question: sanitizedQuestion,
+			chat_history: history || [],
+		});
+
+		// sanitize the response according to our structure
+		const sourceData = []
+		for (let index = 0; index < response.sourceDocuments.length; index++) {
+			if (index >= 3) {
+				// get first three sources only
+				break;
+			}
+			sourceData.push({
+				message: response.sourceDocuments[index].pageContent,
+				source: response.sourceDocuments[index].metadata.source
+			})
+		}
+
+		const sanitizedResponse = {
+			text: response.text,
+			sourceData
+		};
+
+		let followupQuestions: string[] = []
+		// extract the followup questions from the answer
+		const splittedText: string = sanitizedResponse.text.split(/!QUESTIONS!: \n|!QUESTIONS!:\n|!QUESTIONS!: /)
+
+		const answer = splittedText[0];
+
+		if (splittedText[1]) {
+			// if there are followup questions, create an array of them
+			followupQuestions = splittedText[1].split('\n')
+		}
+
+		// asynchronously insert the question in database
+		excuteQuery({
+			query: 'INSERT INTO history(hash, question, answer, followup_questions, source_data, client, pending) VALUES(?, ?, ?, ?, ?, ?, 0);',
+			values: [
+				hash,
+				sanitizedQuestion,
+				answer,
+				JSON.stringify(followupQuestions),
+				JSON.stringify(sanitizedResponse.sourceData),
+				client
+			]
+		}).catch(console.error);
+
 		return res.status(200).json({
 			success: true,
-			data: "",
-			keywords: null,
-			sourceData: [],
-			followupQuestions: []
+			data: answer ?? "",
+			keywords: "placeholder",
+			sourceData: sanitizedResponse.sourceData ?? [],
+			followupQuestions: followupQuestions
 		});
 	} catch (error: any) {
 		console.error('Error from message API', error);
