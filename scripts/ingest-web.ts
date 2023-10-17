@@ -23,7 +23,10 @@ const loader = new CheerioWebBaseLoader(
 const rawDocs = await loader.load();
 
 
- /* Split text into chunks. Set ChunkSize & Overlap - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
+ /* Split text into chunks. 
+    Set ChunkSize & Overlap - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character 
+    The bigger the chunks - the more context for the answer (=better answers)
+    See processing pricing at https://openai.com/pricing    */
 
 export const run = async () => {
   try {
