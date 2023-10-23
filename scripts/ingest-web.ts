@@ -9,21 +9,24 @@ import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from '@/config/pinecone';
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 
 /* Sources:
-	 USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"  
-	 INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
-	 Exsy - contact us to discuss collaboration - "https://www.exsy.io/post/attract-prequalify-customers-with-an-ai-agent"
-	 2023-09-05 AFFIRMATIVE ASYLUM PROCEDURES MANUAL - "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf"
-	 2023-09-20 uscis-family-of-us-citizens - "https://www.uscis.gov/family/family-of-us-citizens"
-					*/
-
+   USCIS Policy Manual - "https://www.uscis.gov/book/export/html/68600"  - 2023-10-23 - 16k tokens
+   INA Immigration & Nationality Act - "https://uscode.house.gov/view.xhtml?path=/prelim@title8&edition=prelim"
+   Exsy - contact us to discuss collaboration - "https://www.exsy.io/post/attract-prequalify-customers-with-an-ai-agent"
+   2023-09-05 AFFIRMATIVE ASYLUM PROCEDURES MANUAL - "https://www.uscis.gov/sites/default/files/document/guides/AAPM-2016.pdf"
+   2023-09-20 uscis-family-of-us-citizens - "https://www.uscis.gov/family/family-of-us-citizens"
+          */
+  
 const loader = new CheerioWebBaseLoader(
-	"https://www.uscis.gov/book/export/html/68600"
+  "https://www.uscis.gov/book/export/html/68600"
 );
 
 const rawDocs = await loader.load();
 
 
-/* Split text into chunks. Set ChunkSize & Overlap - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character */
+ /* Split text into chunks. 
+    Set ChunkSize & Overlap - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character 
+    The bigger the chunks - the more context for the answer (=better answers)
+    See processing pricing at https://openai.com/pricing    */
 
 export const run = async () => {
 	try {

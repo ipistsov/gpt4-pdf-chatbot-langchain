@@ -23,7 +23,11 @@ export const run = async () => {
     // const loader = new PDFLoader(filePath);
     const rawDocs = await directoryLoader.load();
 
-    /* Split text into chunks */
+    /* Split text into chunks. 
+    Set ChunkSize & Overlap - https://js.langchain.com/docs/modules/indexes/text_splitters/examples/recursive_character 
+    The bigger the chunks - the more context for the answer (=better answers)
+    See processing pricing at https://openai.com/pricing    */
+    
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 4000,    // max number of tokens per chunk
       chunkOverlap: 200,
