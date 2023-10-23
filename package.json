@@ -14,7 +14,8 @@
     "format": "prettier --ignore-path .gitignore \"**/*.+(ts|js|tsx)\" --write",
     "ingest": "tsx -r dotenv/config scripts/ingest-data.ts",
     "ingest-web": "tsx -r dotenv/config scripts/ingest-web.ts",
-    "updatePineconeSources": "tsx -r dotenv/config utils/updatePineconeSource.ts"
+    "updatePineconeSources": "tsx -r dotenv/config utils/updatePineconeSource.ts",
+    "deleteVectorsOfASource": "tsx -r dotenv/config utils/deleteVectorsOfASource.ts"
   },
   "dependencies": {
     "@microsoft/fetch-event-source": "^2.0.1",
