@@ -1,4 +1,4 @@
-/**
+/*
  * Change the namespace to the namespace on Pinecone you'd like to store your NEW embeddings.
  * When you run `npm run ingest`. This namespace will later be used for queries and retrieval.
  */
