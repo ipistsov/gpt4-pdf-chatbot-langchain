@@ -88,9 +88,6 @@ export default async function handler(
 			sendData(JSON.stringify({
 				success: true,
 				data: token,
-				keywords: "placeholder",
-				// sourceData: [],
-				// followupQuestions: []
 			}));
 		});
 
